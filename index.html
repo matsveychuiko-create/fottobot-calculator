@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор вёрстки — Фотобот</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a24;
+    --surface2: #22222f;
+    --border: #2e2e3e;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --text: #f0f0f8;
+    --muted: #7a7a9a;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 20px 12px; }
+    .card, .results { padding: 18px 14px; }
+    .tariff-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
+    .tariff-card { padding: 12px 10px; }
+    .tariff-card .t-price { font-size: 0.95rem; }
+    .tariff-card .t-name { font-size: 0.65rem; }
+    .tariff-card .t-note { font-size: 0.68rem; }
+    .tariff-card .t-minprice { font-size: 0.65rem; }
+    .formula-block { font-size: 0.76rem; }
+    input[type=range] { height: 6px; }
+    input[type=range]::-webkit-slider-thumb { width: 26px; height: 26px; }
+    .field label { font-size: 0.84rem; flex-wrap: wrap; gap: 4px; }
+    .hint { font-size: 0.74rem; }
+    .info-row { font-size: 0.82rem; }
+    header { margin-bottom: 28px; }
+    header p { font-size: 0.85rem; }
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  header h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 300;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .card h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  /* Number inputs */
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .field label span {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 0.85rem;
+    color: var(--accent);
+  }
+
+  .slider-wrap {
+    position: relative;
+  }
+
+  input[type=range] {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 0 4px rgba(108,99,255,0.2);
+    transition: box-shadow 0.2s;
+  }
+
+  input[type=range]::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 8px rgba(108,99,255,0.3);
+  }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* Number stepper */
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .stepper button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stepper button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .stepper input {
+    width: 70px;
+    text-align: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 1rem;
+    padding: 8px;
+    outline: none;
+  }
+
+  .stepper input:focus {
+    border-color: var(--accent);
+  }
+
+  /* Results */
+  .results {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+
+  .results h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  .tariff-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  @media (min-width: 600px) {
+    .tariff-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .tariff-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tariff-card.best {
+    border-color: var(--green);
+    background: rgba(74,222,128,0.05);
+  }
+
+  .tariff-card.best::before {
+    content: 'Выгоднее';
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--green);
+    color: #000;
+    font-size: 0.6rem;
+    font-weight: 700;
+    font-family: 'Unbounded', sans-serif;
+    padding: 3px 8px;
+    border-bottom-left-radius: 8px;
+  }
+
+  .tariff-card .t-name {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .tariff-card .t-price {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .tariff-card .t-note {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .tariff-card .t-min {
+    font-size: 0.7rem;
+    color: var(--yellow);
+    margin-top: 6px;
+  }
+
+  .tariff-card .t-minprice {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+  }
+
+  .tariff-card .t-minprice span {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* Formula */
+  .formula-block {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 20px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .formula-block strong {
+    color: var(--text);
+  }
+
+  .formula-block .accent {
+    color: var(--accent);
+    font-family: 'Unbounded', sans-serif;
+    font-size: 0.78rem;
+  }
+
+  /* Info rows */
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+
+  .info-row:last-child { border-bottom: none; }
+  .info-row .val { font-family: 'Unbounded', sans-serif; font-size: 0.82rem; color: var(--accent); }
+
+  /* toggle hint */
+  .hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 8px;
+    padding: 10px 14px;
+    background: rgba(108,99,255,0.08);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Калькулятор стоимости вёрстки</h1>
+    <p>Рассчитайте стоимость заказа и сравните тарифы</p>
+  </header>
+
+  <!-- Параметры заказа -->
+  <div class="card">
+    <h2>Параметры заказа</h2>
+
+    <div class="field">
+      <label>Количество учеников (альбомов) <span id="val-students">25</span></label>
+      <div class="slider-wrap">
+        <input type="range" id="students" min="1" max="60" value="25" oninput="update()">
+        <div class="slider-labels"><span>1</span><span>60</span></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Индивидуальных разворотов на ученика <span id="val-ind">3</span></label>
+      <div class="slider-wrap">
+        <input type="range" id="ind" min="1" max="15" value="3" oninput="update()">
+        <div class="slider-labels"><span>1</span><span>15</span></div>
+      </div>
+      <div class="hint">Уникальный разворот — только для одного ученика, только в его альбоме. Умножается на количество альбомов.</div>
+    </div>
+
+    <div class="field">
+      <label>Общих разворотов (коллажи, виньетки) <span id="val-common">5</span></label>
+      <div class="slider-wrap">
+        <input type="range" id="common" min="0" max="30" value="5" oninput="update()">
+        <div class="slider-labels"><span>0</span><span>30</span></div>
+      </div>
+      <div class="hint">Общий разворот — одинаковый для всех. Считается 1 раз, не умножается на количество альбомов.</div>
+    </div>
+  </div>
+
+  <!-- Результаты -->
+  <div class="results">
+    <h2>Стоимость по тарифам</h2>
+    <div class="tariff-grid" id="tariff-grid"></div>
+
+    <div class="formula-block" id="formula"></div>
+  </div>
+
+  <!-- Сводка -->
+  <div class="card">
+    <h2>Сводка заказа</h2>
+    <div id="summary"></div>
+  </div>
+
+</div>
+
+<script>
+const TARIFFS = [
+  { name: 'Старт',  price: 39, min: 1700, total: 6950 },
+  { name: 'Мини',   price: 34, min: 1500, total: 15000 },
+  { name: 'Миди',   price: 27, min: 1200, total: 30000 },
+  { name: 'Макси',  price: 20, min: 900,  total: 45000 },
+];
+
+function fmt(n) {
+  return n.toLocaleString('ru-RU') + ' ₽';
+}
+
+function calcOrder(students, ind, common, tariff) {
+  const raw = (ind * students + common) * tariff.price;
+  const final = Math.max(raw, tariff.min);
+  const isMin = final === tariff.min && raw < tariff.min;
+  return { raw, final, isMin };
+}
+
+function update() {
+  const students = +document.getElementById('students').value;
+  const ind = +document.getElementById('ind').value;
+  const common = +document.getElementById('common').value;
+
+  document.getElementById('val-students').textContent = students;
+  document.getElementById('val-ind').textContent = ind;
+  document.getElementById('val-common').textContent = common;
+
+  const results = TARIFFS.map(t => ({ ...t, ...calcOrder(students, ind, common, t) }));
+  const minFinal = Math.min(...results.map(r => r.final));
+
+  // Tariff cards
+  const grid = document.getElementById('tariff-grid');
+  grid.innerHTML = results.map(r => `
+    <div class="tariff-card ${r.final === minFinal ? 'best' : ''}">
+      <div class="t-name">${r.name}</div>
+      <div class="t-price">${fmt(r.final)}</div>
+      <div class="t-note">${r.price} ₽/разворот</div>
+      ${r.isMin ? `<div class="t-min">⚡ применён минимум</div>` : ''}
+      <div class="t-minprice">мин. вёрстка<br><span>${fmt(r.min)}</span></div>
+    </div>
+  `).join('');
+
+  // Formula
+  const totalInd = ind * students;
+  const totalSpreads = totalInd + common;
+
+  const formulaRows = results.map(r => {
+    const rawCalc = `(${ind} × ${students} + ${common}) × ${r.price} = ${totalSpreads} × ${r.price} = ${fmt(r.raw)}`;
+    const applied = r.isMin
+      ? `<span style="color:var(--yellow)">⚡ ${fmt(r.raw)} < минимума ${fmt(r.min)} → итого ${fmt(r.final)}</span>`
+      : `<span style="color:var(--green)">✓ итого ${fmt(r.final)}</span>`;
+    return `<div style="padding:6px 0;border-bottom:1px solid var(--border)">
+      <span style="color:var(--text);font-weight:500">«${r.name}»:</span> ${rawCalc}<br>
+      ${applied}
+    </div>`;
+  }).join('');
+
+  document.getElementById('formula').innerHTML = `
+    <strong>Как считается:</strong><br>
+    <span style="color:var(--muted);font-size:0.8rem">(Инд. развороты × Кол-во альбомов + Общие) × Цена разворота тарифа</span>
+    <div style="margin-top:12px;font-size:0.8rem;line-height:1.9">${formulaRows}</div>
+    <div style="margin-top:10px;font-size:0.78rem;color:var(--muted)">Если расчётная сумма ниже минимума тарифа — применяется минимальная стоимость вёрстки целого заказа.</div>
+  `;
+
+  // Summary
+  document.getElementById('summary').innerHTML = `
+    <div class="info-row"><span>Учеников / альбомов</span><span class="val">${students}</span></div>
+    <div class="info-row"><span>Индивидуальных разворотов</span><span class="val">${ind} × ${students} = ${totalInd}</span></div>
+    <div class="info-row"><span>Общих разворотов</span><span class="val">${common}</span></div>
+    <div class="info-row"><span>Всего разворотов к оплате</span><span class="val">${totalInd + common}</span></div>
+  `;
+}
+
+update();
+</script>
+</body>
+</html>
