@@ -385,6 +385,37 @@
       </div>
       <div class="hint">Общий разворот — одинаковый для всех. Считается 1 раз, не умножается на количество альбомов.</div>
     </div>
+
+    <div class="field">
+      <label>Несколько учеников на развороте <span id="val-multi-result" style="color:var(--accent);font-family:'Unbounded',sans-serif;font-size:0.8rem"></span></label>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.88rem;color:var(--muted)">
+          <input type="radio" name="multi" value="0" checked onchange="update()" style="accent-color:var(--accent)"> Не используется
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.88rem;color:var(--muted)">
+          <input type="radio" name="multi" value="2" onchange="update()" style="accent-color:var(--accent)"> 2 ученика
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.88rem;color:var(--muted)">
+          <input type="radio" name="multi" value="4" onchange="update()" style="accent-color:var(--accent)"> 4 ученика
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.88rem;color:var(--muted)">
+          <input type="radio" name="multi" value="6" onchange="update()" style="accent-color:var(--accent)"> 6 учеников
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.88rem;color:var(--muted)">
+          <input type="radio" name="multi" value="8" onchange="update()" style="accent-color:var(--accent)"> 8 учеников
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.88rem;color:var(--muted)">
+          <input type="radio" name="multi" value="12" onchange="update()" style="accent-color:var(--accent)"> 12 учеников
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.88rem;color:var(--muted)">
+          <input type="radio" name="multi" value="16" onchange="update()" style="accent-color:var(--accent)"> 16 учеников
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.88rem;color:var(--muted)">
+          <input type="radio" name="multi" value="18" onchange="update()" style="accent-color:var(--accent)"> 18 учеников
+        </label>
+      </div>
+      <div class="hint">Система автоматически считает количество разворотов. Если деление не целое — добавляется ещё 1 разворот (например 21 ÷ 2 = 10.5 → 11 разворотов).</div>
+    </div>
   </div>
 
   <!-- Результаты -->
@@ -426,12 +457,27 @@ function update() {
   const students = +document.getElementById('students').value;
   const ind = +document.getElementById('ind').value;
   const common = +document.getElementById('common').value;
+  const multiVal = +document.querySelector('input[name="multi"]:checked').value;
 
   document.getElementById('val-students').textContent = students;
   document.getElementById('val-ind').textContent = ind;
   document.getElementById('val-common').textContent = common;
 
-  const results = TARIFFS.map(t => ({ ...t, ...calcOrder(students, ind, common, t) }));
+  // Считаем развороты "несколько учеников"
+  let multiSpreads = 0;
+  let multiNote = '';
+  if (multiVal > 0) {
+    multiSpreads = Math.ceil(students / multiVal);
+    multiNote = `${students} ÷ ${multiVal} = ${(students/multiVal).toFixed(1)} → ${multiSpreads} разворотов`;
+    document.getElementById('val-multi-result').textContent = `= ${multiSpreads} разворотов`;
+  } else {
+    document.getElementById('val-multi-result').textContent = '';
+  }
+
+  // Общие развороты включают и multi-развороты (они одинаковые для всех)
+  const totalCommon = common + multiSpreads;
+
+  const results = TARIFFS.map(t => ({ ...t, ...calcOrder(students, ind, totalCommon, t) }));
   const minFinal = Math.min(...results.map(r => r.final));
 
   // Tariff cards
@@ -448,10 +494,11 @@ function update() {
 
   // Formula
   const totalInd = ind * students;
-  const totalSpreads = totalInd + common;
+  const totalSpreads = totalInd + totalCommon;
 
   const formulaRows = results.map(r => {
-    const rawCalc = `(${ind} × ${students} + ${common}) × ${r.price} = ${totalSpreads} × ${r.price} = ${fmt(r.raw)}`;
+    const multiPart = multiVal > 0 ? ` + ${multiSpreads} (несколько уч.)` : '';
+    const rawCalc = `(${ind} × ${students} + ${common}${multiPart}) × ${r.price} = ${totalSpreads} × ${r.price} = ${fmt(r.raw)}`;
     const applied = r.isMin
       ? `<span style="color:var(--yellow)">⚡ ${fmt(r.raw)} < минимума ${fmt(r.min)} → итого ${fmt(r.final)}</span>`
       : `<span style="color:var(--green)">✓ итого ${fmt(r.final)}</span>`;
@@ -472,8 +519,9 @@ function update() {
   document.getElementById('summary').innerHTML = `
     <div class="info-row"><span>Учеников / альбомов</span><span class="val">${students}</span></div>
     <div class="info-row"><span>Индивидуальных разворотов</span><span class="val">${ind} × ${students} = ${totalInd}</span></div>
-    <div class="info-row"><span>Общих разворотов</span><span class="val">${common}</span></div>
-    <div class="info-row"><span>Всего разворотов к оплате</span><span class="val">${totalInd + common}</span></div>
+    <div class="info-row"><span>Общих разворотов (коллажи/виньетки)</span><span class="val">${common}</span></div>
+    ${multiVal > 0 ? `<div class="info-row"><span>Разворотов «несколько учеников» (${multiVal} уч.)</span><span class="val">${multiSpreads} разворотов — ${multiNote}</span></div>` : ''}
+    <div class="info-row"><span>Всего разворотов к оплате</span><span class="val">${totalSpreads}</span></div>
   `;
 }
 
