@@ -27,11 +27,11 @@
     color: var(--text);
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
-    padding: 40px 20px;
+    padding: 48px 24px;
   }
 
   .wrap {
-    max-width: 1100px;
+    max-width: 1300px;
     margin: 0 auto;
   }
 
@@ -44,7 +44,7 @@
     .tariff-card .t-name { font-size: 0.65rem; }
     .tariff-card .t-note { font-size: 0.68rem; }
     .tariff-card .t-minprice { font-size: 0.65rem; }
-    .formula-block { font-size: 0.76rem; }
+    .formula-block { font-size: 1rem; }
     input[type=range] { height: 6px; }
     input[type=range]::-webkit-slider-thumb { width: 26px; height: 26px; }
     .field label { font-size: 0.84rem; flex-wrap: wrap; gap: 4px; }
@@ -61,7 +61,7 @@
 
   header h1 {
     font-family: 'Unbounded', sans-serif;
-    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
     font-weight: 700;
     background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
     -webkit-background-clip: text;
@@ -87,7 +87,7 @@
 
   .card h2 {
     font-family: 'Unbounded', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.12em;
@@ -104,14 +104,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--text);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 
   .field label span {
     font-family: 'Unbounded', sans-serif;
-    font-size: 1rem;
+    font-size: 1.15rem;
     color: var(--accent);
   }
 
@@ -208,7 +208,7 @@
 
   .results h2 {
     font-family: 'Unbounded', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.12em;
@@ -260,7 +260,7 @@
 
   .tariff-card .t-name {
     font-family: 'Unbounded', sans-serif;
-    font-size: 0.8rem;
+    font-size: 0.88rem;
     font-weight: 600;
     color: var(--muted);
     text-transform: uppercase;
@@ -270,14 +270,14 @@
 
   .tariff-card .t-price {
     font-family: 'Unbounded', sans-serif;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--text);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
 
   .tariff-card .t-note {
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     color: var(--muted);
     line-height: 1.4;
   }
@@ -307,7 +307,7 @@
     border-radius: 10px;
     padding: 16px;
     margin-top: 20px;
-    font-size: 0.82rem;
+    font-size: 1rem;
     color: var(--muted);
     line-height: 1.8;
   }
@@ -329,7 +329,7 @@
     align-items: center;
     padding: 12px 0;
     border-bottom: 1px solid var(--border);
-    font-size: 0.95rem;
+    font-size: 1.05rem;
   }
 
   .info-row:last-child { border-bottom: none; }
@@ -337,7 +337,7 @@
 
   /* toggle hint */
   .hint {
-    font-size: 0.85rem;
+    font-size: 0.92rem;
     color: var(--muted);
     margin-top: 8px;
     padding: 10px 14px;
@@ -511,8 +511,8 @@ function update() {
   document.getElementById('formula').innerHTML = `
     <strong>Как считается:</strong><br>
     <span style="color:var(--muted);font-size:0.8rem">(Инд. развороты × Кол-во альбомов + Общие) × Цена разворота тарифа</span>
-    <div style="margin-top:12px;font-size:0.8rem;line-height:1.9">${formulaRows}</div>
-    <div style="margin-top:10px;font-size:0.78rem;color:var(--muted)">Если расчётная сумма ниже минимума тарифа — применяется минимальная стоимость вёрстки целого заказа.</div>
+    <div style="margin-top:12px;font-size:1.05rem;line-height:2.1">${formulaRows}</div>
+    <div style="margin-top:10px;font-size:0.95rem;color:var(--muted)">Если расчётная сумма ниже минимума тарифа — применяется минимальная стоимость вёрстки целого заказа.</div>
   `;
 
   // Summary
