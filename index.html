@@ -44,7 +44,7 @@
     .tariff-card .t-name { font-size: 0.65rem; }
     .tariff-card .t-note { font-size: 0.68rem; }
     .tariff-card .t-minprice { font-size: 0.65rem; }
-    .formula-block { font-size: 1rem; }
+    .formula-block { font-size: 0.88rem; }
     input[type=range] { height: 6px; }
     input[type=range]::-webkit-slider-thumb { width: 26px; height: 26px; }
     .field label { font-size: 0.84rem; flex-wrap: wrap; gap: 4px; }
@@ -104,14 +104,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     color: var(--text);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .field label span {
     font-family: 'Unbounded', sans-serif;
-    font-size: 1.15rem;
+    font-size: 0.95rem;
     color: var(--accent);
   }
 
@@ -270,10 +270,10 @@
 
   .tariff-card .t-price {
     font-family: 'Unbounded', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--text);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
 
   .tariff-card .t-note {
@@ -307,7 +307,7 @@
     border-radius: 10px;
     padding: 16px;
     margin-top: 20px;
-    font-size: 1rem;
+    font-size: 0.88rem;
     color: var(--muted);
     line-height: 1.8;
   }
@@ -329,7 +329,7 @@
     align-items: center;
     padding: 12px 0;
     border-bottom: 1px solid var(--border);
-    font-size: 1.05rem;
+    font-size: 0.95rem;
   }
 
   .info-row:last-child { border-bottom: none; }
@@ -337,7 +337,7 @@
 
   /* toggle hint */
   .hint {
-    font-size: 0.92rem;
+    font-size: 0.8rem;
     color: var(--muted);
     margin-top: 8px;
     padding: 10px 14px;
@@ -511,8 +511,8 @@ function update() {
   document.getElementById('formula').innerHTML = `
     <strong>Как считается:</strong><br>
     <span style="color:var(--muted);font-size:0.8rem">(Инд. развороты × Кол-во альбомов + Общие) × Цена разворота тарифа</span>
-    <div style="margin-top:12px;font-size:1.05rem;line-height:2.1">${formulaRows}</div>
-    <div style="margin-top:10px;font-size:0.95rem;color:var(--muted)">Если расчётная сумма ниже минимума тарифа — применяется минимальная стоимость вёрстки целого заказа.</div>
+    <div style="margin-top:12px;font-size:0.88rem;line-height:1.9">${formulaRows}</div>
+    <div style="margin-top:10px;font-size:0.82rem;color:var(--muted)">Если расчётная сумма ниже минимума тарифа — применяется минимальная стоимость вёрстки целого заказа.</div>
   `;
 
   // Summary
