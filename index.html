@@ -27,16 +27,24 @@
     color: var(--text);
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
-    padding: 48px 24px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .outer {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 48px 32px;
+    box-sizing: border-box;
   }
 
   .wrap {
-    max-width: 1300px;
-    margin: 0 auto;
+    width: 100%;
   }
 
   @media (max-width: 480px) {
-    body { padding: 20px 12px; }
+    .outer { padding: 16px 10px; }
     .card, .results { padding: 18px 14px; }
     .tariff-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
     .tariff-card { padding: 12px 10px; }
@@ -349,6 +357,7 @@
 </style>
 </head>
 <body>
+<div class="outer">
 <div class="wrap">
 
   <header>
@@ -432,6 +441,7 @@
     <div id="summary"></div>
   </div>
 
+</div>
 </div>
 
 <script>
